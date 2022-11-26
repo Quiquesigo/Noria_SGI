@@ -21,10 +21,11 @@ static const int tasaFPS = 60;
 
 using namespace std;
 int i;
-static const GLfloat vertices[24] = { 0.0,0.1,0.1, 0.1,0.1,0.1, 0.1,0.0,0.1, 0.0,0.0,0.1, 0.0,0.1,-0.1, 0.1,0.1,-0.1, 0.1,0.0,-0.1, 0.0,0.0,-0.1 };
-static const GLfloat vertices2[24] = { 0.0,0.1,-0.1, 0.1,0.1,-0.1, 0.1,0.0,-0.1, 0.0,0.0,-0.1 };
+float grosor = 1;
+static const GLfloat vertices[48] = { 0,0.5,0.1, 0.4,0.4,0.1, 0.5,0,0.1, 0.4,-0.4,0.1, 0,-0.5,0.1, -0.4,-0.4,0.1, -0.5,0,0.1, -0.4,0.4,0.1, 0,0.5,-0.1, 0.4,0.4,-0.1, 0.5,0,-0.1, 0.4,-0.4,-0.1, 0,-0.5,-0.1, -0.4,-0.4,-0.1, -0.5,0,-0.1, -0.4,0.4,-0.1 };
+static const GLfloat vertices2[24] = { 0,0.5,-0.1, 0.25,0.25,-0.1, 0.5,0,-0.1, 0.25,-0.25,-0.1, 0,-0.5,-0.1, -0.25,-0.25,-0.1, -0.5,0,-0.1, -0.25,0.25,-0.1 };
 static const GLfloat colores[24] = { 1,0,0, 1,0,0,  1,0,0,  1,0,0,  1,0,0,  1,0,0,  1,0,0, 1,0,0 };
-static const GLuint indices[36] = { 0,1,1, 1,2,2, 2,3,3, 3,0,0, 0,4,4, 4,5,5, 5,1,1, 3,7,7, 2,6,6, 5,6,6, 7,6,6, 7,4,4};
+static const GLuint indices[72] = { 0,1,1, 1,2,2, 2,3,3, 3,4,4, 4,5,5, 5,6,6, 6,7,7, 7,0,0, 8,9,9, 9,10,10, 10,11,11, 11,12,12, 12,13,13, 13,14,14, 14,15,15, 15,8,8, 0,8,8, 1,9,9, 2,10,10, 3,11,11, 4,12,12, 5,13,13, 6,14,14, 7,15,15};
 
 void init()
 // Inicializaciones
@@ -37,7 +38,8 @@ void init()
 	glEnable(GL_DEPTH_TEST);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY); // Activa el uso del array de vertices
-	glVertexPointer(3, GL_FLOAT, 0, vertices); // Carga el array de vertices
+	glVertexPointer(3, GL_FLOAT, 0, vertices);// Carga el array de vertices
+	//glVertexPointer(3, GL_FLOAT, 0, vertices2);
 }
 
 void FPS()
@@ -70,41 +72,186 @@ void display()
 // Funcion de atencion al dibujo
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	// Seleccionar la MODELVIEW
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	// Situar y orientar la camara
-	gluLookAt(8, 2, 8, 0, 0, 0, 0, 1, 0);
-
+	gluLookAt(3, 2, 3, 0, 0, 0, 0, 1, 0);
 	ejes();
-
+	glPushMatrix();
 	//glRotatef(20, -1, -5, 0);
 	glRotatef(angulo/2, 0, 0, 1); 
 	//glTranslatef(0, 1, 0); 
 	//glutWireSphere(0.1, 20,10); 
-
 	//glutWireTeapot(0.2);
 	//glRotatef(angulo, 0, 0, 1);
-
-	glPushMatrix();
-	glTranslatef(0, 1, 0);
-	glRotatef(90, 0, 1, 0);
+	//glTranslatef(0, 1, 0);
+	//glRotatef(90, 0, 1, 0);
 	glEnableClientState(GL_COLOR_ARRAY); // Activa el uso del array de colores
 	glColorPointer(3, GL_FLOAT, 0, colores); // Carga el array de colores
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Las caras del poligono rellenas
+	glLineWidth(6);
 	// Dibujo del octaedro como 8 triangulos coloreados
-	//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
+	glDrawElements(GL_TRIANGLES, 72, GL_UNSIGNED_INT, indices);
 	glDisableClientState(GL_COLOR_ARRAY); // Desactiva el array de colores
-	glColor3f(1, 1, 1); // Fija el color a blaco
+	glColor3f(1, 1, 0); // Fija el color a blaco
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Las caras del poligono en alambrico
 	// Dibujo del octaedro como 8 triangulos en alambrico
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
+	glDrawElements(GL_TRIANGLES, 72, GL_UNSIGNED_INT, indices);
+	glLineWidth(1);
+	glBegin(GL_LINES);
+	glVertex3f(0, 0.1, 0.1); glVertex3f(0, 0.5, 0.1);
+	glVertex3f(0, 0.1, -0.1); glVertex3f(0, 0.5, -0.1);
+	glVertex3f(0.05, 0.07, 0.1); glVertex3f(0.4, 0.4, 0.1);
+	glVertex3f(0.1, 0, 0.1); glVertex3f(0.5, 0, 0.1);
+	glVertex3f(0.05, -0.07, 0.1); glVertex3f(0.4, -0.4, 0.1);
+	glVertex3f(0, -0.1, 0.1); glVertex3f(0, -0.5, 0.1);
+	glVertex3f(-0.05, -0.07, 0.1); glVertex3f(-0.4, -0.4, 0.1);
+	glVertex3f(-0.1, 0, 0.1); glVertex3f(-0.5, 0, 0.1);
+	glVertex3f(-0.05, 0.07, 0.1); glVertex3f(-0.4, 0.4, 0.1);
+	glVertex3f(0.05, 0.07, -0.1); glVertex3f(0.4, 0.4, -0.1);
+	glVertex3f(0.1, 0, -0.1); glVertex3f(0.5, 0, -0.1);
+	glVertex3f(0.05, -0.07, -0.1); glVertex3f(0.4, -0.4, -0.1);
+	glVertex3f(0, -0.1, -0.1); glVertex3f(0, -0.5, -0.1);
+	glVertex3f(-0.05, -0.07, -0.1); glVertex3f(-0.4, -0.4, -0.1);
+	glVertex3f(-0.1, 0, -0.1); glVertex3f(-0.5, 0, -0.1);
+	glVertex3f(-0.05, 0.07, -0.1); glVertex3f(-0.4, 0.4, -0.1);
+	glEnd();
 	//glRotatef(angulo / 2, 0, 1, 0);
 	glPopMatrix();
 
 	glPushMatrix();
+	//glLoadIdentity();
+	glColor3f(1, 0.5, 0.5);
+	glLineWidth(1);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.15);
+	glVertex3f(0.1, 0, 0.15);
+	glVertex3f(-0.45, -1, 0.15);
+	glVertex3f(-0.65, -1, 0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.2);
+	glVertex3f(0.1, 0, 0.2);
+	glVertex3f(-0.45, -1, 0.2);
+	glVertex3f(-0.65, -1, 0.2);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.15);
+	glVertex3f(0, 0, 0.2);
+	glVertex3f(0.1, 0, 0.2);
+	glVertex3f(0.1, 0, 0.15);
+	glEnd();
+	
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.45, -1, 0.15);
+	glVertex3f(-0.45, -1, 0.2);
+	glVertex3f(-0.65, -1, 0.2);
+	glVertex3f(-0.65, -1, 0.15);
+	glEnd();
+
+	glColor3f(0, 0, 0);
+	glLineWidth(1);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.15);
+	glVertex3f(0.1, 0, 0.15);
+	glVertex3f(-0.45, -1, 0.15);
+	glVertex3f(-0.65, -1, 0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.2);
+	glVertex3f(0.1, 0, 0.2);
+	glVertex3f(-0.45, -1, 0.2);
+	glVertex3f(-0.65, -1, 0.2);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.15);
+	glVertex3f(0, 0, 0.2);
+	glVertex3f(0.1, 0, 0.2);
+	glVertex3f(0.1, 0, 0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.45, -1, 0.15);
+	glVertex3f(-0.45, -1, 0.2);
+	glVertex3f(-0.65, -1, 0.2);
+	glVertex3f(-0.65, -1, 0.15);
+	glEnd();
+
+	glColor3f(1, 0.5, 0.5);
+	glLineWidth(1);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.15);
+	glVertex3f(0.1, 0, 0.15);
+	glVertex3f(0.65, -1, 0.15);
+	glVertex3f(0.45, -1, 0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.2);
+	glVertex3f(0.1, 0, 0.2);
+	glVertex3f(0.65, -1, 0.2);
+	glVertex3f(0.45, -1, 0.2);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.15);
+	glVertex3f(0, 0, 0.2);
+	glVertex3f(0.1, 0, 0.2);
+	glVertex3f(0.1, 0, 0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0.45, -1, 0.15);
+	glVertex3f(0.45, -1, 0.2);
+	glVertex3f(0.65, -1, 0.2);
+	glVertex3f(0.65, -1, 0.15);
+	glEnd();
+
+	glColor3f(0, 0, 0);
+	glLineWidth(1);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.15);
+	glVertex3f(0.1, 0, 0.15);
+	glVertex3f(0.65, -1, 0.15);
+	glVertex3f(0.45, -1, 0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.2);
+	glVertex3f(0.1, 0, 0.2);
+	glVertex3f(0.65, -1, 0.2);
+	glVertex3f(0.45,-1, 0.2);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, 0.15);
+	glVertex3f(0, 0, 0.2);
+	glVertex3f(0.1, 0, 0.2);
+	glVertex3f(0.1, 0, 0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0.45, -1, 0.15);
+	glVertex3f(0.45, -1, 0.2);
+	glVertex3f(0.65, -1, 0.2);
+	glVertex3f(0.65, -1, 0.15);
+	glEnd();
+
+	//glColor3f(1, 0.5, 0);
+	//glBegin(GL_POLYGON);
+
+
+	/*glPushMatrix();
 	glTranslatef(0.2, 1, 0);
 	glRotatef(90, 0, 1, 0);
 	glEnableClientState(GL_COLOR_ARRAY); // Activa el uso del array de colores
@@ -134,7 +281,7 @@ void display()
 	//glPopMatrix();
 	glPopMatrix();
 
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(0.2, 1, 0);
 	glRotatef(90, 0, 1, 0);
 	glRotatef(90, 0, 0, 1);
@@ -168,7 +315,7 @@ void display()
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
 		p += 0.1;
 		glPopMatrix();
-	}
+	}*/
 	glutSwapBuffers();
 
 	FPS();
