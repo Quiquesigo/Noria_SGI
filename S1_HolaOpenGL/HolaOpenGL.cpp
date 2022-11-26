@@ -10,7 +10,7 @@
 #include <iostream>
 
 // Bibliotecas graficas
-#include <GL/freeglut.h>
+#include <gl/freeglut.h>
 
 using namespace std;
 

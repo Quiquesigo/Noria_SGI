@@ -79,13 +79,17 @@ void display()
 	glutSolidTeapot(0.5);
 	glColor3fv(BLANCO);
 	glutWireTeapot(0.51);
+	glPushMatrix();
+	//glRotatef(0, 0, 0, 1); // Giro alrededor del sol
+	glTranslatef(0, 1, 0); // Puesto en Orbita
+	glutWireSphere(0.5, 10, 10); // El planeta mide 0.5
+	glPopMatrix();
 	glPopMatrix();
 
 	glPushMatrix();
 	glTranslatef(-1, 0, -1);
-	glRotatef(angulo / 2, 0, 1, 0);
+	glRotatef(0, 0, 1, 0);
 	glColor3f(0, 0, 1);
-	glutSolidTeapot(0.5);
 	glColor3fv(AMARILLO);
 	glutWireTeapot(0.51);
 	glPopMatrix();
@@ -123,7 +127,7 @@ void onIdle()
 	///angulo += 0.1;
 
 	// con control del tiempo
-	static const float vueltasPorSegundo = 1;
+	static const float vueltasPorSegundo = 0.1;
 	static int antes = glutGet(GLUT_ELAPSED_TIME);
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
 	angulo += vueltasPorSegundo * 360 * (ahora - antes) / 1000;
@@ -148,7 +152,7 @@ int main(int argc, char** argv)
 	// Inicializaciones
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(600, 600);
+	glutInitWindowSize(1600, 1600);
 	glutCreateWindow(PROYECTO);
 	init();
 

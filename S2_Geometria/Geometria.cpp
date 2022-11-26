@@ -1,69 +1,45 @@
 /*!
 	Geometria.cpp
-	
-	Programa para dibujar un pentagono con listas
-
-	@author		Roberto Vivo' <rvivo@upv.es>
-	@date		Oct,2022
- */
-
-#define PROYECTO "ISGI::S2E02::Listas de dibujo"
-
-#include <iostream>			
-#include <Utilidades.h>
-
-using namespace std;
-
-static GLuint pentagono;
-static GLfloat coordenadas[10];
-
+/***************************************************
+ISGI::Octaedro como Vertex Array
+Roberto Vivo', 2013 (v1.0)
+Dibujo de un octaedro con vertices coloreados usando
+arrays de vertices, colores e indices
+Dependencias:
++GLUT
+***************************************************/
+#define PROYECTO "ISGI::S2E06::Octaedro Vertex Array"
+#include <iostream> // Biblioteca de entrada salida
+#include <cmath> // Biblioteca matemática de C
+#include <gl\glut.h> // Biblioteca grafica
+// Vector de coordenadas 6x3 de los vertices del octaedro
+static const GLfloat vertices[18] = { 1,0,0, 0,1,0, 0,0,1, -1,0,0, 0,-1,0, 0,0,-1 };
+// Vector de colores 6x3 de los vertices del octaedro
+static const GLfloat colores[18] = { 1,0,0, 0,1,0, 0,0,1, 1,1,0, 0,1,1, 1,0,1 };
+// Vector de indices de los triángulos (antihorario) que forman el octaedro 8x3
+static const GLuint indices[24] = { 1,2,0, 1,0,5, 1,5,3, 1,3,2, 4,2,0, 4,0,5, 4,5,3, 4,3,2 };
 void init()
-// Inicializaciones
+// Funcion de inicializacion propia
 {
-	cout << "Iniciando " << PROYECTO << endl;
-	cout << "GL version " << glGetString(GL_VERSION) << endl;
-
-	float radio = 1;
-	for (int i = 0; i < 10; i += 2) {
-		coordenadas[i] = radio * cosf((float(i) / 2) * 2 * PI / 5);
-		coordenadas[i + 1] = radio * sinf((float(i) / 2) * 2 * PI / 5);
-	}
-
-	// Lista de dibujo
-	pentagono = glGenLists(1);			
-
-	glNewList(pentagono, GL_COMPILE);
-		glBegin(GL_POLYGON);
-		for (int i = 0; i < 10; i+=2) {
-			glVertex3f(coordenadas[i], coordenadas[i+1], 0);
-		}
-		glEnd();
-	glEndList();
-
-	// Inicializaciones 
-	glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
+	glEnableClientState(GL_VERTEX_ARRAY); // Activa el uso del array de vertices
+	glVertexPointer(3, GL_FLOAT, 0, vertices); // Carga el array de vertices
 }
-
 void display()
 // Funcion de atencion al dibujo
 {
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	ejes();
-
-	// Uso de Display Lists
-	glPolygonMode(GL_FRONT, GL_FILL);
-	glColor3f(1, 0, 0);
-	glCallList(pentagono);
-		
-	glPushAttrib(GL_CURRENT_BIT|GL_LINE_BIT);
-	glLineWidth(4);
-	glPolygonMode(GL_FRONT, GL_LINE);
-	glColor3f(1, 1, 1);
-	glCallList(pentagono);
-	glPopAttrib();
-
-	glFlush();
+	glClear(GL_COLOR_BUFFER_BIT); // Borra la pantalla
+	glEnableClientState(GL_COLOR_ARRAY); // Activa el uso del array de colores
+	glColorPointer(3, GL_FLOAT, 0, colores); // Carga el array de colores
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Las caras del poligono rellenas
+	// Dibujo del octaedro como 8 triangulos coloreados
+	//glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, indices);
+	glRotatef(20, 1, 1, 0);
+	glDisableClientState(GL_COLOR_ARRAY); // Desactiva el array de colores
+	glColor3f(1, 1, 1); // Fija el color a blaco
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Las caras del poligono en alambrico
+	// Dibujo del octaedro como 8 triangulos en alambrico
+	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, indices);
+	glFlush(); // Finaliza el dibujo
 }
 
 void reshape(GLint w, GLint h)
