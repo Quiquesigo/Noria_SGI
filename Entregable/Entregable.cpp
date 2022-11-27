@@ -23,7 +23,6 @@ using namespace std;
 int i;
 float grosor = 1;
 static const GLfloat vertices[48] = { 0,0.5,0.1, 0.4,0.4,0.1, 0.5,0,0.1, 0.4,-0.4,0.1, 0,-0.5,0.1, -0.4,-0.4,0.1, -0.5,0,0.1, -0.4,0.4,0.1, 0,0.5,-0.1, 0.4,0.4,-0.1, 0.5,0,-0.1, 0.4,-0.4,-0.1, 0,-0.5,-0.1, -0.4,-0.4,-0.1, -0.5,0,-0.1, -0.4,0.4,-0.1 };
-static const GLfloat vertices2[24] = { 0,0.5,-0.1, 0.25,0.25,-0.1, 0.5,0,-0.1, 0.25,-0.25,-0.1, 0,-0.5,-0.1, -0.25,-0.25,-0.1, -0.5,0,-0.1, -0.25,0.25,-0.1 };
 static const GLfloat colores[24] = { 1,0,0, 1,0,0,  1,0,0,  1,0,0,  1,0,0,  1,0,0,  1,0,0, 1,0,0 };
 static const GLuint indices[72] = { 0,1,1, 1,2,2, 2,3,3, 3,4,4, 4,5,5, 5,6,6, 6,7,7, 7,0,0, 8,9,9, 9,10,10, 10,11,11, 11,12,12, 12,13,13, 13,14,14, 14,15,15, 15,8,8, 0,8,8, 1,9,9, 2,10,10, 3,11,11, 4,12,12, 5,13,13, 6,14,14, 7,15,15};
 
@@ -34,12 +33,11 @@ void init()
 	cout << "GL version " << glGetString(GL_VERSION) << endl;
 
 	// Inicializaciones 
-	glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
+	glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY); // Activa el uso del array de vertices
 	glVertexPointer(3, GL_FLOAT, 0, vertices);// Carga el array de vertices
-	//glVertexPointer(3, GL_FLOAT, 0, vertices2);
 }
 
 void FPS()
@@ -56,7 +54,7 @@ void FPS()
 	ahora = glutGet(GLUT_ELAPSED_TIME);
 	tiempoTranscurrido = (ahora - antes) / 1000;
 
-	// si ha transcurrido mas de un segundo, muestro los FPS y reinicio
+	// si ha transcurrido mas de un segundo, se muestran los FPS y reinicio
 	// la cuenta y el reloj
 	if (tiempoTranscurrido >= 1) {
 		stringstream titulo;
@@ -75,31 +73,24 @@ void display()
 	// Seleccionar la MODELVIEW
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
 	// Situar y orientar la camara
-	gluLookAt(3, 2, 3, 0, 0, 0, 0, 1, 0);
-	ejes();
+	gluLookAt(5, 2, 5, 0, 0, 0, 0, 1, 0);
+	glPopMatrix();
+	glRotatef(angulo/4, 0, 0.5, 0);
 	glPushMatrix();
-	//glRotatef(20, -1, -5, 0);
-	glRotatef(angulo/2, 0, 0, 1); 
-	//glTranslatef(0, 1, 0); 
-	//glutWireSphere(0.1, 20,10); 
-	//glutWireTeapot(0.2);
-	//glRotatef(angulo, 0, 0, 1);
-	//glTranslatef(0, 1, 0);
-	//glRotatef(90, 0, 1, 0);
-	glEnableClientState(GL_COLOR_ARRAY); // Activa el uso del array de colores
-	glColorPointer(3, GL_FLOAT, 0, colores); // Carga el array de colores
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Las caras del poligono rellenas
+	glRotatef(-angulo/2, 0, 0, 1); 
+	glEnableClientState(GL_COLOR_ARRAY); 
+	glColorPointer(3, GL_FLOAT, 0, colores); 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); 
 	glLineWidth(6);
-	// Dibujo del octaedro como 8 triangulos coloreados
 	glDrawElements(GL_TRIANGLES, 72, GL_UNSIGNED_INT, indices);
-	glDisableClientState(GL_COLOR_ARRAY); // Desactiva el array de colores
-	glColor3f(1, 1, 0); // Fija el color a blaco
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Las caras del poligono en alambrico
-	// Dibujo del octaedro como 8 triangulos en alambrico
+	glDisableClientState(GL_COLOR_ARRAY); 
+	glColor3f(0, 0, 0); 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDrawElements(GL_TRIANGLES, 72, GL_UNSIGNED_INT, indices);
 	glLineWidth(1);
+
+	//Metales que sujetan la noria al cilindro
 	glBegin(GL_LINES);
 	glVertex3f(0, 0.1, 0.1); glVertex3f(0, 0.5, 0.1);
 	glVertex3f(0, 0.1, -0.1); glVertex3f(0, 0.5, -0.1);
@@ -118,33 +109,203 @@ void display()
 	glVertex3f(-0.1, 0, -0.1); glVertex3f(-0.5, 0, -0.1);
 	glVertex3f(-0.05, 0.07, -0.1); glVertex3f(-0.4, 0.4, -0.1);
 	glEnd();
-	//glRotatef(angulo / 2, 0, 1, 0);
+
+	//Metal que sujeta asientos al circulo exterior
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
+	glColor3f(0, 0, 0);
+	glBegin(GL_LINES);
+	glVertex3f(0, 0.45, 0.07); glVertex3f(0, 0.5, 0.07);
+	glVertex3f(0, 0.5, -0.07); glVertex3f(0, 0.45, -0.07);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex3f(0.35, 0.35, 0.07); glVertex3f(0.4, 0.4, 0.07);
+	glVertex3f(0.4, 0.4, -0.07); glVertex3f(0.35, 0.35, -0.07);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex3f(0.45, 0, 0.07); glVertex3f(0.5, 0, 0.07);
+	glVertex3f(0.45, 0, -0.07); glVertex3f(0.5, 0, -0.07);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex3f(0.35, -0.35, 0.07); glVertex3f(0.4, -0.4, 0.07);
+	glVertex3f(0.4, -0.4, -0.07); glVertex3f(0.35, -0.35, -0.07);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex3f(0, -0.45, 0.07); glVertex3f(0, -0.5, 0.07);
+	glVertex3f(0, -0.5, -0.07); glVertex3f(0, -0.45, -0.07);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex3f(-0.35, -0.35, 0.07); glVertex3f(-0.4, -0.4, 0.07);
+	glVertex3f(-0.4, -0.4, -0.07); glVertex3f(-0.35, -0.35, -0.07);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex3f(-0.45, 0, 0.07); glVertex3f(-0.5, 0, 0.07);
+	glVertex3f(-0.45, 0, -0.07); glVertex3f(-0.5, 0, -0.07);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex3f(-0.35, 0.35, 0.07); glVertex3f(-0.4, 0.4, 0.07);
+	glVertex3f(-0.4, 0.4, -0.07); glVertex3f(-0.35, 0.35, -0.07);
+	glEnd();
+
+	//Asientos en alambrico
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.45, 0.07); glVertex3f(0, 0.45, -0.07);
+	glVertex3f(0, 0.4, -0.07); glVertex3f(0, 0.4, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.4, -0.07); glVertex3f(0, 0.4, 0.07);
+	glVertex3f(0.07, 0.4, 0.07); glVertex3f(0.07, 0.4, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0, -0.45, 0.07); glVertex3f(0, -0.45, -0.07);
+	glVertex3f(0, -0.4, -0.07); glVertex3f(0, -0.4, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0, -0.4, -0.07); glVertex3f(0, -0.4, 0.07);
+	glVertex3f(-0.07, -0.4, 0.07); glVertex3f(-0.07, -0.4, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.45, 0, 0.07); glVertex3f(0.45, 0, -0.07);
+	glVertex3f(0.4, 0, -0.07); glVertex3f(0.4, 0, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.4, 0, -0.07); glVertex3f(0.4, 0, 0.07);
+	glVertex3f(0.4, -0.07, 0.07); glVertex3f(0.4, -0.07, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.45, 0, 0.07); glVertex3f(-0.45, 0, -0.07);
+	glVertex3f(-0.4, 0, -0.07); glVertex3f(-0.4, 0, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.4, 0, -0.07); glVertex3f(-0.4, 0, 0.07);
+	glVertex3f(-0.4, 0.07, 0.07); glVertex3f(-0.4, 0.07, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.35, 0.35, 0.07); glVertex3f(0.35, 0.35, -0.07);
+	glVertex3f(0.3, 0.3, -0.07); glVertex3f(0.3, 0.3, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.3, 0.3, -0.07); glVertex3f(0.3, 0.3, 0.07);
+	glVertex3f(0.35, 0.25, 0.07); glVertex3f(0.35, 0.25, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.35, 0.35, 0.07); glVertex3f(-0.35, 0.35, -0.07);
+	glVertex3f(-0.3, 0.3, -0.07); glVertex3f(-0.3, 0.3, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.3, 0.3, -0.07); glVertex3f(-0.3, 0.3, 0.07);
+	glVertex3f(-0.25, 0.35, 0.07); glVertex3f(-0.25, 0.35, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.35, -0.35, 0.07); glVertex3f(0.35, -0.35, -0.07);
+	glVertex3f(0.3, -0.3, -0.07); glVertex3f(0.3, -0.3, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.3, -0.3, -0.07); glVertex3f(0.3, -0.3, 0.07);
+	glVertex3f(0.25, -0.35, 0.07); glVertex3f(0.25, -0.35, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.35, -0.35, 0.07); glVertex3f(-0.35, -0.35, -0.07);
+	glVertex3f(-0.3, -0.3, -0.07); glVertex3f(-0.3, -0.3, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.3, -0.3, -0.07); glVertex3f(-0.3, -0.3, 0.07);
+	glVertex3f(-0.35, -0.25, 0.07); glVertex3f(-0.35, -0.25, -0.07);
+	glEnd();
+
+	//Asientos rellenados
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glColor3f(0, 1, 1);
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.45, 0.07); glVertex3f(0, 0.45, -0.07);
+	glVertex3f(0, 0.4, -0.07); glVertex3f(0, 0.4, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.4, -0.07); glVertex3f(0, 0.4, 0.07);
+	glVertex3f(0.07, 0.4, 0.07); glVertex3f(0.07, 0.4, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0, -0.45, 0.07); glVertex3f(0, -0.45, -0.07);
+	glVertex3f(0, -0.4, -0.07); glVertex3f(0, -0.4, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0, -0.4, -0.07); glVertex3f(0, -0.4, 0.07);
+	glVertex3f(-0.07, -0.4, 0.07); glVertex3f(-0.07, -0.4, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.45, 0, 0.07); glVertex3f(0.45, 0, -0.07);
+	glVertex3f(0.4, 0, -0.07); glVertex3f(0.4, 0, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.4, 0, -0.07); glVertex3f(0.4, 0, 0.07);
+	glVertex3f(0.4, -0.07, 0.07); glVertex3f(0.4, -0.07, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.45, 0, 0.07); glVertex3f(-0.45, 0, -0.07);
+	glVertex3f(-0.4, 0, -0.07); glVertex3f(-0.4, 0, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.4, 0, -0.07); glVertex3f(-0.4, 0, 0.07);
+	glVertex3f(-0.4, 0.07, 0.07); glVertex3f(-0.4, 0.07, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.35, 0.35, 0.07); glVertex3f(0.35, 0.35, -0.07);
+	glVertex3f(0.3, 0.3, -0.07); glVertex3f(0.3, 0.3, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.3, 0.3, -0.07); glVertex3f(0.3, 0.3, 0.07);
+	glVertex3f(0.35, 0.25, 0.07); glVertex3f(0.35, 0.25, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.35, 0.35, 0.07); glVertex3f(-0.35, 0.35, -0.07);
+	glVertex3f(-0.3, 0.3, -0.07); glVertex3f(-0.3, 0.3, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.3, 0.3, -0.07); glVertex3f(-0.3, 0.3, 0.07);
+	glVertex3f(-0.25, 0.35, 0.07); glVertex3f(-0.25, 0.35, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.35, -0.35, 0.07); glVertex3f(0.35, -0.35, -0.07);
+	glVertex3f(0.3, -0.3, -0.07); glVertex3f(0.3, -0.3, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.3, -0.3, -0.07); glVertex3f(0.3, -0.3, 0.07);
+	glVertex3f(0.25, -0.35, 0.07); glVertex3f(0.25, -0.35, -0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.35, -0.35, 0.07); glVertex3f(-0.35, -0.35, -0.07);
+	glVertex3f(-0.3, -0.3, -0.07); glVertex3f(-0.3, -0.3, 0.07);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.3, -0.3, -0.07); glVertex3f(-0.3, -0.3, 0.07);
+	glVertex3f(-0.35, -0.25, 0.07); glVertex3f(-0.35, -0.25, -0.07);
+	glEnd();
 	glPopMatrix();
 
 	glPushMatrix();
-	//glLoadIdentity();
-	glColor3f(1, 0.5, 0.5);
+	glColor3f(0.5, 0.5, 0.5);
 	glLineWidth(1);
+
+	//Amarre delantero izquierdo
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, 0.15);
 	glVertex3f(0, 0, 0.15);
-	glVertex3f(0.1, 0, 0.15);
 	glVertex3f(-0.45, -1, 0.15);
 	glVertex3f(-0.65, -1, 0.15);
 	glEnd();
 
 	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, 0.2);
 	glVertex3f(0, 0, 0.2);
-	glVertex3f(0.1, 0, 0.2);
 	glVertex3f(-0.45, -1, 0.2);
 	glVertex3f(-0.65, -1, 0.2);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3f(0, 0, 0.15);
+	glVertex3f(-0.05, 0, 0.15);
+	glVertex3f(-0.05, 0, 0.2);
 	glVertex3f(0, 0, 0.2);
-	glVertex3f(0.1, 0, 0.2);
-	glVertex3f(0.1, 0, 0.15);
+	glVertex3f(0, 0, 0.15);
 	glEnd();
 	
 	glBegin(GL_POLYGON);
@@ -154,28 +315,35 @@ void display()
 	glVertex3f(-0.65, -1, 0.15);
 	glEnd();
 
-	glColor3f(0, 0, 0);
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, 0.15);
+	glVertex3f(-0.05, 0, 0.2);
+	glVertex3f(-0.65, -1, 0.2);
+	glVertex3f(-0.65, -1, 0.15);
+	glEnd();
+
+	glColor3f(1, 1, 1);
 	glLineWidth(1);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, 0.15);
 	glVertex3f(0, 0, 0.15);
-	glVertex3f(0.1, 0, 0.15);
 	glVertex3f(-0.45, -1, 0.15);
 	glVertex3f(-0.65, -1, 0.15);
 	glEnd();
 
 	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, 0.2);
 	glVertex3f(0, 0, 0.2);
-	glVertex3f(0.1, 0, 0.2);
 	glVertex3f(-0.45, -1, 0.2);
 	glVertex3f(-0.65, -1, 0.2);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3f(0, 0, 0.15);
+	glVertex3f(-0.05, 0, 0.15);
+	glVertex3f(-0.05, 0, 0.2);
 	glVertex3f(0, 0, 0.2);
-	glVertex3f(0.1, 0, 0.2);
-	glVertex3f(0.1, 0, 0.15);
+	glVertex3f(0, 0, 0.15);
 	glEnd();
 
 	glBegin(GL_POLYGON);
@@ -185,137 +353,319 @@ void display()
 	glVertex3f(-0.65, -1, 0.15);
 	glEnd();
 
-	glColor3f(1, 0.5, 0.5);
+	//Amarre delantero derecho
+	glColor3f(0.5, 0.5, 0.5);
 	glLineWidth(1);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_POLYGON);
 	glVertex3f(0, 0, 0.15);
-	glVertex3f(0.1, 0, 0.15);
-	glVertex3f(0.65, -1, 0.15);
+	glVertex3f(0.05, 0, 0.15);
 	glVertex3f(0.45, -1, 0.15);
+	glVertex3f(0.25, -1, 0.15);
 	glEnd();
 
 	glBegin(GL_POLYGON);
 	glVertex3f(0, 0, 0.2);
-	glVertex3f(0.1, 0, 0.2);
-	glVertex3f(0.65, -1, 0.2);
+	glVertex3f(0.05, 0, 0.2);
 	glVertex3f(0.45, -1, 0.2);
+	glVertex3f(0.25, -1, 0.2);
 	glEnd();
 
 	glBegin(GL_POLYGON);
 	glVertex3f(0, 0, 0.15);
 	glVertex3f(0, 0, 0.2);
-	glVertex3f(0.1, 0, 0.2);
-	glVertex3f(0.1, 0, 0.15);
+	glVertex3f(0.05, 0, 0.2);
+	glVertex3f(0.05, 0, 0.15);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3f(0.45, -1, 0.15);
+	glVertex3f(0.25, -1, 0.15);
+	glVertex3f(0.25, -1, 0.2);
 	glVertex3f(0.45, -1, 0.2);
-	glVertex3f(0.65, -1, 0.2);
-	glVertex3f(0.65, -1, 0.15);
+	glVertex3f(0.45, -1, 0.15);
 	glEnd();
 
-	glColor3f(0, 0, 0);
+	glBegin(GL_POLYGON);
+	glVertex3f(0.05, 0, 0.2);
+	glVertex3f(0.05, 0, 0.15);
+	glVertex3f(0.45, -1, 0.15);
+	glVertex3f(0.45, -1, 0.2);
+	glEnd();
+
+	glColor3f(1, 1, 1);
 	glLineWidth(1);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBegin(GL_POLYGON);
 	glVertex3f(0, 0, 0.15);
-	glVertex3f(0.1, 0, 0.15);
-	glVertex3f(0.65, -1, 0.15);
+	glVertex3f(0.05, 0, 0.15);
 	glVertex3f(0.45, -1, 0.15);
+	glVertex3f(0.25, -1, 0.15);
 	glEnd();
 
 	glBegin(GL_POLYGON);
 	glVertex3f(0, 0, 0.2);
-	glVertex3f(0.1, 0, 0.2);
-	glVertex3f(0.65, -1, 0.2);
-	glVertex3f(0.45,-1, 0.2);
+	glVertex3f(0.05, 0, 0.2);
+	glVertex3f(0.45, -1, 0.2);
+	glVertex3f(0.25,-1, 0.2);
 	glEnd();
 
 	glBegin(GL_POLYGON);
 	glVertex3f(0, 0, 0.15);
 	glVertex3f(0, 0, 0.2);
-	glVertex3f(0.1, 0, 0.2);
-	glVertex3f(0.1, 0, 0.15);
+	glVertex3f(0.05, 0, 0.2);
+	glVertex3f(0.05, 0, 0.15);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3f(0.45, -1, 0.15);
+	glVertex3f(0.25, -1, 0.15);
+	glVertex3f(0.25, -1, 0.2);
 	glVertex3f(0.45, -1, 0.2);
-	glVertex3f(0.65, -1, 0.2);
-	glVertex3f(0.65, -1, 0.15);
+	glVertex3f(0.45, -1, 0.15);
 	glEnd();
 
-	//glColor3f(1, 0.5, 0);
-	//glBegin(GL_POLYGON);
+	//Amarre detras izquierdo
+	glColor3f(0.5, 0.5, 0.5);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, -0.15);
+	glVertex3f(0, 0, -0.15);
+	glVertex3f(-0.45, -1, -0.15);
+	glVertex3f(-0.65, -1, -0.15);
+	glEnd();
 
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, -0.2);
+	glVertex3f(0, 0, -0.2);
+	glVertex3f(-0.45, -1, -0.2);
+	glVertex3f(-0.65, -1, -0.2);
+	glEnd();
 
-	/*glPushMatrix();
-	glTranslatef(0.2, 1, 0);
-	glRotatef(90, 0, 1, 0);
-	glEnableClientState(GL_COLOR_ARRAY); // Activa el uso del array de colores
-	glColorPointer(3, GL_FLOAT, 0, colores); // Carga el array de colores
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Las caras del poligono rellenas
-	// Dibujo del octaedro como 8 triangulos coloreados
-	//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
-	glDisableClientState(GL_COLOR_ARRAY); // Desactiva el array de colores
-	glColor3f(1, 1, 1); // Fija el color a blaco
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Las caras del poligono en alambrico
-	// Dibujo del octaedro como 8 triangulos en alambrico
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
-	//glPopMatrix();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, -0.15);
+	glVertex3f(-0.05, 0, -0.2);
+	glVertex3f(0, 0, -0.2);
+	glVertex3f(0, 0, -0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.45, -1, -0.15);
+	glVertex3f(-0.45, -1, -0.2);
+	glVertex3f(-0.65, -1, -0.2);
+	glVertex3f(-0.65, -1, -0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, -0.15);
+	glVertex3f(-0.05, 0, -0.2);
+	glVertex3f(-0.65, -1, -0.2);
+	glVertex3f(-0.65, -1, -0.15);
+	glEnd();
+
+	glColor3f(1, 1, 1);
+	glLineWidth(1);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, -0.15);
+	glVertex3f(0, 0, -0.15);
+	glVertex3f(-0.45, -1, -0.15);
+	glVertex3f(-0.65, -1, -0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, -0.2);
+	glVertex3f(0, 0, -0.2);
+	glVertex3f(-0.45, -1, -0.2);
+	glVertex3f(-0.65, -1, -0.2);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.05, 0, -0.15);
+	glVertex3f(-0.05, 0, -0.2);
+	glVertex3f(0, 0, -0.2);
+	glVertex3f(0, 0, -0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.45, -1, -0.15);
+	glVertex3f(-0.45, -1, -0.2);
+	glVertex3f(-0.65, -1, -0.2);
+	glVertex3f(-0.65, -1, -0.15);
+	glEnd();
+
+	//Amarre detras derecho
+	glColor3f(0.5, 0.5, 0.5);
+	glLineWidth(1);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, -0.15);
+	glVertex3f(0.05, 0, -0.15);
+	glVertex3f(0.45, -1, -0.15);
+	glVertex3f(0.25, -1, -0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, -0.2);
+	glVertex3f(0.05, 0, -0.2);
+	glVertex3f(0.45, -1, -0.2);
+	glVertex3f(0.25, -1, -0.2);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, -0.15);
+	glVertex3f(0, 0, -0.2);
+	glVertex3f(0.05, 0, -0.2);
+	glVertex3f(0.05, 0, -0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0.25, -1, -0.15);
+	glVertex3f(0.25, -1, -0.2);
+	glVertex3f(0.45, -1, -0.2);
+	glVertex3f(0.45, -1, -0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0.05, 0, -0.2);
+	glVertex3f(0.05, 0, -0.15);
+	glVertex3f(0.45, -1, -0.15);
+	glVertex3f(0.45, -1, -0.2);
+	glEnd();
+
+	glColor3f(1, 1, 1);
+	glLineWidth(1);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, -0.15);
+	glVertex3f(0.05, 0, -0.15);
+	glVertex3f(0.45, -1, -0.15);
+	glVertex3f(0.25, -1, -0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, -0.2);
+	glVertex3f(0.05, 0, -0.2);
+	glVertex3f(0.45, -1, -0.2);
+	glVertex3f(0.25, -1, -0.2);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0, -0.15);
+	glVertex3f(0, 0, -0.2);
+	glVertex3f(0.05, 0, -0.2);
+	glVertex3f(0.05, 0, -0.15);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0.25, -1, -0.15);
+	glVertex3f(0.25, -1, -0.2);
+	glVertex3f(0.45, -1, -0.2);
+	glVertex3f(0.45, -1, -0.15);
+	glEnd();
+
 	glPopMatrix();
-
 	glPushMatrix();
-	glEnableClientState(GL_COLOR_ARRAY); // Activa el uso del array de colores
-	glColorPointer(3, GL_FLOAT, 0, colores); // Carga el array de colores
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Las caras del poligono rellenas
-	// Dibujo del octaedro como 8 triangulos coloreados
-	//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
-	glDisableClientState(GL_COLOR_ARRAY); // Desactiva el array de colores
-	glColor3f(1, 1, 1); // Fija el color a blaco
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Las caras del poligono en alambrico
-	// Dibujo del octaedro como 8 triangulos en alambrico
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
-	//glPopMatrix();
+	glTranslatef(0, 0, -0.05);
+
+	//Circulo sujecion radios y amarres
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
+	glColor3f(1, 1, 1);
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.1, 0.3);
+	glVertex3f(0.05, 0.07, 0.3); 
+	glVertex3f(0.1, 0, 0.3); 
+	glVertex3f(0.05, -0.07, 0.3); 
+	glVertex3f(0, -0.1, 0.3); 
+	glVertex3f(-0.05, -0.07, 0.3); 
+	glVertex3f(-0.1, 0, 0.3); 
+	glVertex3f(-0.05, 0.07, 0.3); 
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.1, -0.2);
+	glVertex3f(0.05, 0.07, -0.2); 
+	glVertex3f(0.1, 0, -0.2); 
+	glVertex3f(0.05, -0.07, -0.2); 
+	glVertex3f(0, -0.1, -0.2);
+	glVertex3f(-0.05, -0.07, -0.2); 
+	glVertex3f(-0.1, 0, -0.2); 
+	glVertex3f(-0.05, 0.07, -0.2); 
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.1, 0.3); glVertex3f(0, 0.1, -0.2);
+	glVertex3f(0.05, 0.07, 0.3); glVertex3f(0.05, 0.07, -0.2);
+	glVertex3f(0.1, 0, 0.3); glVertex3f(0.1, 0, -0.2);
+	glVertex3f(0.05, -0.07, 0.3); glVertex3f(0.05, -0.07, -0.2);
+	glVertex3f(0, -0.1, 0.3); glVertex3f(0, -0.1, -0.2);
+	glVertex3f(-0.05, -0.07, 0.3); glVertex3f(-0.05, -0.07, -0.2);
+	glVertex3f(-0.1, 0, 0.3); glVertex3f(-0.1, 0, -0.2);
+	glVertex3f(-0.05, 0.07, 0.3); glVertex3f(-0.05, 0.07, -0.2);
+	glEnd();
+
+	glColor3f(0.5, 0.5, 0.5);
+	glLineWidth(1);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.1, 0.3);
+	glVertex3f(0.05, 0.07, 0.3);
+	glVertex3f(0.1, 0, 0.3);
+	glVertex3f(0.05, -0.07, 0.3);
+	glVertex3f(0, -0.1, 0.3);
+	glVertex3f(-0.05, -0.07, 0.3);
+	glVertex3f(-0.1, 0, 0.3);
+	glVertex3f(-0.05, 0.07, 0.3);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.1, -0.2);
+	glVertex3f(0.05, 0.07, -0.2);
+	glVertex3f(0.1, 0, -0.2);
+	glVertex3f(0.05, -0.07, -0.2);
+	glVertex3f(0, -0.1, -0.2);
+	glVertex3f(-0.05, -0.07, -0.2);
+	glVertex3f(-0.1, 0, -0.2);
+	glVertex3f(-0.05, 0.07, -0.2);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.1, 0.3); glVertex3f(0, 0.1, -0.2);
+	glVertex3f(0.05, 0.07, -0.2); glVertex3f(0.05, 0.07, 0.3);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0, 0.1, 0.3); glVertex3f(0, 0.1, -0.2);
+	glVertex3f(-0.05, 0.07, -0.2); glVertex3f(-0.05, 0.07, 0.3);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.1, 0, 0.3); glVertex3f(0.1, 0, -0.2);
+	glVertex3f(0.05, 0.07, -0.2); glVertex3f(0.05, 0.07, 0.3);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.1, 0, 0.3); glVertex3f(-0.1, 0, -0.2);
+	glVertex3f(-0.05, -0.07, -0.2); glVertex3f(-0.05, -0.07, 0.3);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0.1, 0, 0.3); glVertex3f(0.1, 0, -0.2);
+	glVertex3f(0.05, -0.07, -0.2); glVertex3f(0.05, -0.07, 0.3);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(0, -0.1, 0.3); glVertex3f(0, -0.1, -0.2);
+	glVertex3f(-0.05, -0.07, -0.2); glVertex3f(-0.05, -0.07, 0.3);
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex3f(-0.1, 0, 0.3); glVertex3f(-0.1, 0, -0.2);
+	glVertex3f(-0.05, 0.07, -0.2); glVertex3f(-0.05, 0.07, 0.3);
+	glEnd();
 	glPopMatrix();
 
-	/*glPushMatrix();
-	glTranslatef(0.2, 1, 0);
-	glRotatef(90, 0, 1, 0);
-	glRotatef(90, 0, 0, 1);
-	glEnableClientState(GL_COLOR_ARRAY); // Activa el uso del array de colores
-	glColorPointer(3, GL_FLOAT, 0, colores); // Carga el array de colores
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Las caras del poligono rellenas
-	// Dibujo del octaedro como 8 triangulos coloreados
-	//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
-	glDisableClientState(GL_COLOR_ARRAY); // Desactiva el array de colores
-	glColor3f(1, 1, 1); // Fija el color a blaco
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Las caras del poligono en alambrico
-	// Dibujo del octaedro como 8 triangulos en alambrico
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
-	//glPopMatrix();
+	//Cesped
+	glColor3f(0, 1, 0);
+	glBegin(GL_POLYGON);
+	glVertex3f(-5, -1, 5);
+	glVertex3f(-5, -1, -5);
+	glVertex3f(5, -1, -5);
+	glVertex3f(5, -1, 5);
+	glEnd();
 	glPopMatrix();
-
-	float p = 0.4;
-	for (i = 0; i <= 5; i++) {
-		glPushMatrix();
-		glTranslatef(p, 1, 0);
-		glRotatef(90, 0, 1, 0);//NO SE PUEDE HACER ASÃ PORQUE ROTAN 2 ANGULOS A LA VEZ Y NO ES EL RESULTADO ESPERADO, CAMBIAR LAS COORDENADAS
-		glEnableClientState(GL_COLOR_ARRAY); // Activa el uso del array de colores
-		glColorPointer(3, GL_FLOAT, 0, colores); // Carga el array de colores
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Las caras del poligono rellenas
-		// Dibujo del octaedro como 8 triangulos coloreados
-		//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
-		glDisableClientState(GL_COLOR_ARRAY); // Desactiva el array de colores
-		glColor3f(1, 1, 1); // Fija el color a blaco
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Las caras del poligono en alambrico
-		// Dibujo del octaedro como 8 triangulos en alambrico
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indices);
-		p += 0.1;
-		glPopMatrix();
-	}*/
+	
+	
 	glutSwapBuffers();
 
 	FPS();
@@ -326,29 +676,14 @@ void reshape(GLint w, GLint h)
 {
 	float relacionAspecto = float(w) / h;
 	glViewport(0, 0, w, h);
-
-	// Definir la camara
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
-	/*
-	if(relacionAspecto>1)
-		glOrtho(-2*relacionAspecto, 2*relacionAspecto, -2, 2, -20, 20);
-	else
-		glOrtho(-2, 2, -2/relacionAspecto, 2/relacionAspecto, -20, 20);
-	*/
-
 	gluPerspective(30, relacionAspecto, 0.1, 100);
 }
 
 void onIdle()
 {
-	// Callback de atencion al evento idle (sin faena)
-
-	// sin control del tiempo
-	///angulo += 0.1;
-
-	// con control del tiempo
+	// Callback de atencion al evento idle
 	static const float vueltasPorSegundo = 0.1;
 	static int antes = glutGet(GLUT_ELAPSED_TIME);
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
@@ -362,7 +697,7 @@ void onIdle()
 
 void onTimer(int tiempo)
 {
-	// Callback de atencion a la cuenta atras
+	// Callback de atencion
 	glutTimerFunc(tiempo, onTimer, tiempo);
 
 	onIdle();
@@ -377,13 +712,11 @@ int main(int argc, char** argv)
 	glutInitWindowSize(1600, 1600);
 	glutCreateWindow(PROYECTO);
 	init();
-
+	printf("No he conseguido hacer girar los asientos de la noria respecto a su amarre superior. Todas las estructuras están hechas punto a punto y señalizadas en el código mediante comentarios");
 	// Registro de callbacks	
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
-	//glutIdleFunc(onIdle);
 	glutTimerFunc(1000 / tasaFPS, onTimer, 1000 / tasaFPS);
-
 	// Bucle de atencion a eventos
 	glutMainLoop();
 }
