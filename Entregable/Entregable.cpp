@@ -1,27 +1,19 @@
 /*!
-	Animacion.cpp
-
-	Programa para manejar la variable temporal y
-	actualizar la escena en cada frame
-
-	@author		Roberto Vivo' <rvivo@upv.es>
-	@date		Oct,2022
+	Entregable practica 5
+	Trabajo realizado por Enrique Javier Sierra Gómez
  */
 
-#define PROYECTO "ISGI::S5E01::Animacion"
+#define PROYECTO "Practica5"
 
 #include <iostream>		
 #include <sstream>
 #include <Utilidades.h>
 
- // Variables dependientes del tiempo
 static float angulo = 0;
 
 static const int tasaFPS = 60;
 
 using namespace std;
-int i;
-float grosor = 1;
 static const GLfloat vertices[48] = { 0,0.5,0.1, 0.4,0.4,0.1, 0.5,0,0.1, 0.4,-0.4,0.1, 0,-0.5,0.1, -0.4,-0.4,0.1, -0.5,0,0.1, -0.4,0.4,0.1, 0,0.5,-0.1, 0.4,0.4,-0.1, 0.5,0,-0.1, 0.4,-0.4,-0.1, 0,-0.5,-0.1, -0.4,-0.4,-0.1, -0.5,0,-0.1, -0.4,0.4,-0.1 };
 static const GLfloat colores[24] = { 1,0,0, 1,0,0,  1,0,0,  1,0,0,  1,0,0,  1,0,0,  1,0,0, 1,0,0 };
 static const GLuint indices[72] = { 0,1,1, 1,2,2, 2,3,3, 3,4,4, 4,5,5, 5,6,6, 6,7,7, 7,0,0, 8,9,9, 9,10,10, 10,11,11, 11,12,12, 12,13,13, 13,14,14, 14,15,15, 15,8,8, 0,8,8, 1,9,9, 2,10,10, 3,11,11, 4,12,12, 5,13,13, 6,14,14, 7,15,15};
@@ -42,9 +34,6 @@ void init()
 
 void FPS()
 {
-	// Cuenta los fotogramas por segundo y los muestra en
-	// la barra de titulo de la ventana
-
 	static int antes = glutGet(GLUT_ELAPSED_TIME);
 	static int fotogramas = 0;
 	int ahora, tiempoTranscurrido;
@@ -54,11 +43,9 @@ void FPS()
 	ahora = glutGet(GLUT_ELAPSED_TIME);
 	tiempoTranscurrido = (ahora - antes) / 1000;
 
-	// si ha transcurrido mas de un segundo, se muestran los FPS y reinicio
-	// la cuenta y el reloj
 	if (tiempoTranscurrido >= 1) {
 		stringstream titulo;
-		titulo << "FPS= " << fotogramas;
+		titulo << "Noria de feria por Enrique Javier Sierra";
 		glutSetWindowTitle(titulo.str().c_str());
 		// reinicio
 		antes = ahora;
