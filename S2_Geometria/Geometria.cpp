@@ -1,4 +1,4 @@
-/*!
+/*
 	Geometria.cpp
 /***************************************************
 ISGI::Octaedro como Vertex Array
